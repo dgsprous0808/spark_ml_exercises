@@ -1,0 +1,28 @@
+# Working thru "Machine Learning with Spark, Second Edition" Rajdeep Dua,
+# Manpreet Singh Ghotra & Nick Pentreath.
+#
+# This is how to actually run the spark-shell examples on pages 14-15
+# Authors did not spec that these imports are needed.
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.SparkSession
+
+# create a new spark context
+# First, stop the existing spark-shell native context
+sc.stop
+
+# create new conf
+val conf = new SparkConf().setAppName("Test Spark App").setMaster("local[4]")
+
+# create new spark SparkContext
+val sc = new SparkContext(conf)
+
+# existing session includes hive enabled, create new SparkSession
+val spConfig = (new SparkConf).setMaster("local").setAppName("SparkApp")
+val spark = SparkSession.builder().appName("SparkUserData").config(spConfig).getOrCreate()
+
+# now read data
+# REM:  git clone https://github.com/jsnowacki/SPARK.git
+val user_df = spark.read.format("com.databricks.spark.csv").option("delimiter","|").load("/Users/sprod007/repos/SPARK/data/ml-100k/u.user")
+user_df.first()
+# Returns:  res3: org.apache.spark.sql.Row = [1,24,M,technician,85711]
